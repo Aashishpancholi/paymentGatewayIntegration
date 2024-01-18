@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Razorpay Payment Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Razorpay Payment Demo</h1>
+      <button id="payButton">Pay with Razorpay</button>
+    </div>
+
+    <script>
+      let options = {
+        key: "rzp_test_j7os8PZGTYFIri",
+        amount: 100, // Amount in paise (100 paise = 1 INR)
+        name: "Nikon",
+        description: "DSLR 500",
+        image:
+          "https://www.google.co.in/url?sa=i&url=https%3A%2F%2Fwww.dfstudio.com%2Fdigital-image-size-and-resolution-what-do-you-need-to-know%2F&psig=AOvVaw3rGmJ4MEBvtzsgZCiF1RzB&ust=1705571415086000&source=images&cd=vfe&ved=0CBMQjRxqFwoTCMi_0eaS5IMDFQAAAAAdAAAAABAE",
+        handler: function (response) {
+          alert(
+            "Payment successful! Payment ID: " + response.razorpay_payment_id
+          );
+          // You can send the payment ID to your server for further processing
+          sendPaymentToServer(response.razorpay_payment_id);
+        },
+        prefill: {
+          name: "Ashish Pancholi",
+          email: "ashish.maiet023@gmail.com",
+          contact: "7976026014",
+        },
+        theme: {
+          color: "#000",
+          //   color: "#F37254",
+        },
+      };
+
+      let razorpay = new Razorpay(options);
+
+      document.getElementById("payButton").onclick = function () {
+        razorpay.open();
+      };
+
+      // Function to send payment details to your server
+      function sendPaymentToServer(paymentId) {
+        let xhr = new XMLHttpRequest();
+        let url = "your-server-endpoint"; // Replace with your server endpoint
+
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            console.log("Payment details sent to server:", xhr.responseText);
+          } else if (xhr.readyState == 4 && xhr.status != 200) {
+            console.error(
+              "Error sending payment details:",
+              xhr.status,
+              xhr.statusText
+            );
+          }
+        };
+
+        let data = JSON.stringify({
+          payment_id: paymentId,
+        });
+
+        xhr.send(data);
+      }
+    </script>
+  </body>
+</html>
